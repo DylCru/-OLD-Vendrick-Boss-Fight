@@ -1,0 +1,111 @@
+# ---------FIGHT CONFIG----------
+# These settings effect how the fight work
+
+# Whether vendrick can spawn or not
+# default = false
+disable-boss: false
+
+# Disables/Enables the blindness and slowness given to players after Vendrick is killed
+# Default = false
+disable-effects: false
+
+# Name: WinMessage
+# The players name will be put where [player] is
+# '&' is used to change the colour of the text
+# BroadcastMessage will tell everyone online that a player defeated vendrick (true/false)
+# Default = "&3&o[player] Has defeated Vendrick!" / true
+WinMessage: "&3&o[player] Has defeated Vendrick!"
+BroadcastMessage: true
+
+# This decides whether players keep their inventory if they die in the fight
+# default = true
+keep-inventory: true
+
+# Sets Vendrick's health
+# Interval attacks will always happen at the same times
+# Default and minimum = 500
+# Maximum = 2048
+vendrick-health: 500
+
+# Whether Vendrick has the ability to use his "Eternal growth" attack
+# Default = false
+DoGrowths: false
+
+#This decides whether players are able to obtain drops after killing vendrick (effects all drops)
+#default = true
+do-drops: true
+
+# The chance for a "rare" item to drop after beating vendrick. The chance is 1 in (your number)
+# default = 3
+rare-chance: 3
+
+# The chance for a "special" item to drop after beating vendrick. The chance is 1 in (your number)
+# default = 12
+special-chance: 12
+
+# -----------------------------------------
+
+# -----------SPAWN CONFIG------------------
+# These settings effect where vendrick can spawn
+
+# This decides whether vendrick can be spawned anywhere or only at the locations below
+# Default = false
+use-locations: false
+
+# Organise the locations where vendrick can spawn in this format
+# [location name]:
+#   - x
+#   - y
+#   - z
+# Refer to the example location below for help
+
+spawn-locations:
+  1:
+  - 42680
+  - 73
+  - 33828
+
+#-----------ITEM CONFIG-------------------
+# These setting effect how certain items work and the ways you obtain them
+
+# This is the mob type the eternal trader will be
+# D-trader is the Distorted merchant
+# Make sure to type out the name in all caps
+# default = VILLAGER
+trader-type: VILLAGER
+D-trader-type: VILLAGER
+M-trader-type: VILLAGER
+
+# This decides whether all players on the server will be told when someone trades for a special item (true/false)
+# default = true
+announce-special: true
+
+# This decides whether players are able to craft the special items
+can-craft: true
+
+# Name: PlayerShatterDmg
+# This is the damage the shatter stick's ability will do
+# ShowCooldown tells the player when their shatter stick has been used and when it is off cooldown
+# Default = 15 / true
+
+PlayerShatterDmg: 15
+ShowCooldown: true
+
+# This list effects the mobs that the energy rifle CAN'T damage
+rifle-safe:
+  - VILLAGER
+
+# The mob that drops the flame/wave core
+# Make sure the chosen mob is killable or cores will not be obtainable without /ven i
+# defaults:
+# BLAZE
+# GUARDIAN
+# PHANTOM
+flame-core-mob: BLAZE
+wave-core-mob: GUARDIAN
+voltaic-core-mob: PHANTOM
+
+#----------------------------------
+
+
+
