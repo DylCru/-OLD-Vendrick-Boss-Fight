@@ -36,6 +36,7 @@ public class StormyEvents implements Listener {
 
             if (chance >= 14){
                 plugin.vendrick.startAttack(0);
+                plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(6));
                 LightningStorm storm = new LightningStorm(plugin);
                 for (UUID p : plugin.fighting){
                     AttackCharge charge = new AttackCharge(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Lightning Storm", Bukkit.getPlayer(p));
