@@ -56,6 +56,7 @@ public class TideEvents implements Listener {
                             startWave(e.getEntity());
                             tsunami = new Tsunami(plugin.vendrick, plugin.fighting);
                             waving = true;
+                            plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(5));
                         }
                     }
                 }
