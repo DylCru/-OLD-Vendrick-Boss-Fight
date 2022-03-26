@@ -38,6 +38,16 @@ public class StatsTracker {
                 break;
             case 3:
                 attackList.add(ChatColor.DARK_GREEN + "The Horde");
+                break;
+            case 4:
+                attackList.add(ChatColor.GOLD + "Inferno");
+                break;
+            case 5:
+                attackList.add(ChatColor.DARK_BLUE + "Tsunami");
+                break;
+            case 6:
+                attackList.add(ChatColor.DARK_AQUA + "Lightning Storm");
+                break;
         }
     }
 
