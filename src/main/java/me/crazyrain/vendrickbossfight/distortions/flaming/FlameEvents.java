@@ -48,6 +48,7 @@ public class FlameEvents implements Listener {
                         startInferno(e.getEntity());
                         inferno = new Inferno(plugin.vendrick, plugin.fighting);
                         infernoing = true;
+                        plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(4));
                     }
                 }
             }
