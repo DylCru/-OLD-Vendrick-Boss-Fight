@@ -2,10 +2,7 @@ package me.crazyrain.vendrickbossfight.functionality;
 
 import me.crazyrain.vendrickbossfight.VendrickBossFight;
 import me.crazyrain.vendrickbossfight.npcs.Vendrick;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -26,16 +23,18 @@ public class FloatingCollectable {
     String name;
     ItemStack item;
     Location location;
+    Particle particle;
     ArmorStand stand;
     ArmorStand nameStand;
     boolean collected;
     boolean fightOnly;
     int time;
 
-    public FloatingCollectable(String name, ItemStack item, Location location, boolean fightOnly, int time){
+    public FloatingCollectable(String name, ItemStack item, Location location, boolean fightOnly, int time, Particle particle){
         this.name = name;
         this.item = item;
         this.location = location;
+        this.particle = particle;
         this.collected = false;
         this.fightOnly = fightOnly;
         this.time = time;
@@ -49,7 +48,7 @@ public class FloatingCollectable {
         stand.setMetadata("venCollect", new FixedMetadataValue(plugin,"venCollect"));
         stand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
 
-        nameStand = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(0,-0.5,0), EntityType.ARMOR_STAND);
+        nameStand = (ArmorStand) location.getWorld().spawnEntity(location.clone().add(0,-0.75,0), EntityType.ARMOR_STAND);
         nameStand.setCustomNameVisible(true);
         nameStand.setCustomName(name);
         nameStand.setVisible(false);
@@ -105,8 +104,9 @@ public class FloatingCollectable {
                 standLoc.setYaw(rot);
                 rot += 3f;
 
+                standLoc.getWorld().spawnParticle(particle, standLoc.clone().add(0,1.5, 0), 5);
                 stand.teleport(standLoc);
-                nameStand.teleport(standLoc.clone().add(0,1,0));
+                //nameStand.teleport(standLoc.clone().add(0,1,0));
             }
         }.runTaskTimer(plugin,0, 3);
     }
