@@ -1,6 +1,7 @@
 package me.crazyrain.vendrickbossfight.functionality;
 
 import me.crazyrain.vendrickbossfight.CustomEvents.VendrickFightStopEvent;
+import me.crazyrain.vendrickbossfight.CustomEvents.VendrickStartAttackEvent;
 import me.crazyrain.vendrickbossfight.VendrickBossFight;
 import me.crazyrain.vendrickbossfight.attacks.*;
 import me.crazyrain.vendrickbossfight.distortions.flaming.FlamingVendrick;
@@ -280,6 +281,7 @@ public class Events implements Listener {
                             Bukkit.getPlayer(id).sendMessage(Lang.PORTAL.toString());
                             AttackCharge charge = new AttackCharge(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Eternal Wraiths", Bukkit.getPlayer(id));
                         }
+                        plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(1));
                     }
                 }
 
@@ -298,6 +300,7 @@ public class Events implements Listener {
                             AttackCharge charge = new AttackCharge(ChatColor.GOLD + "" + ChatColor.BOLD + "Pig Bombs", Bukkit.getPlayer(id));
                             Bukkit.getPlayer(id).sendMessage(Lang.BOMBS.toString());
                         }
+                        plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(2));
                     }
                 }
 
@@ -359,12 +362,13 @@ public class Events implements Listener {
                                     wraiths.init(plugin.vendrick, plugin.fighting, true);
                                     plugin.vendrick.startAttack(1);
                                     attacking = true;
-                                    for (UUID id : plugin.fighting){
+                                    for (UUID id : plugin.fighting) {
                                         AttackCharge charge = new AttackCharge(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Eternal Wraiths", Bukkit.getPlayer(id));
                                         Bukkit.getPlayer(id).sendMessage(Lang.PORTAL.toString());
                                     }
-                                    return;
+                                    plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(1));
                                 }
+                                break;
                             case 1:
                                 if (!(attacking)) {
                                     PigBombs pigBombs = new PigBombs(plugin);
@@ -375,8 +379,9 @@ public class Events implements Listener {
                                         AttackCharge charge = new AttackCharge(ChatColor.GOLD + "" + ChatColor.BOLD + "Pig Bombs", Bukkit.getPlayer(id));
                                         Bukkit.getPlayer(id).sendMessage(Lang.BOMBS.toString());
                                     }
-                                    return;
+                                    plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(2));
                                 }
+                                break;
                             case 2:
                                 if (plugin.getConfig().getBoolean("DoGrowths")) {
                                     ZombieHoard hoard = new ZombieHoard(plugin);
@@ -387,6 +392,7 @@ public class Events implements Listener {
                                         Bukkit.getPlayer(id).sendMessage(Lang.GROWTHS.toString());
                                     }
                                     plugin.vendrick.startAttack(3);
+                                    plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(3));
                                 }
                             }
                          }
