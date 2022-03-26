@@ -83,7 +83,8 @@ public class LightningStorm {
                                 , ItemManager.ballLightning
                                 , ball.getLocation()
                                 , true,
-                                8);
+                                8,
+                                Particle.NAUTILUS);
                         collectable.spawnStand();
                     }
                 }
