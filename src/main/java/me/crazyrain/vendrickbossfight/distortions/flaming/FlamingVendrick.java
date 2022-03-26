@@ -88,7 +88,6 @@ public class FlamingVendrick extends Vendrick{
         this.phase = phase;
 
         vendrick.getLocation().getWorld().playSound(vendrick.getLocation(), Sound.ENTITY_EVOKER_PREPARE_SUMMON, 10, 0.6f);
-        plugin.getServer().getPluginManager().callEvent(new VendrickStartAttackEvent(getPhase()));
     }
 
     @Override
