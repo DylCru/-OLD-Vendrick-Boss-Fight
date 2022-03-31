@@ -1,6 +1,7 @@
 package me.crazyrain.vendrickbossfight.attacks;
 
 import me.crazyrain.vendrickbossfight.VendrickBossFight;
+import me.crazyrain.vendrickbossfight.mobs.Wraith;
 import me.crazyrain.vendrickbossfight.npcs.Vendrick;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -9,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -32,8 +34,6 @@ public class PortalWraiths implements Listener {
         public static ArmorStand portal;
 
         public static Integer rot = 0;
-
-
 
         public PortalWraiths(VendrickBossFight plugin){
             this.plugin = plugin;
@@ -74,6 +74,7 @@ public class PortalWraiths implements Listener {
                     portal.setMetadata("Portal", new FixedMetadataValue(plugin, "portal"));
                     portal.setCustomName(ChatColor.DARK_PURPLE + "" + ChatColor.BOLD + "Portal health: " + ChatColor.DARK_RED + ChatColor.BOLD + portalHealth);
                     portal.setCustomNameVisible(true);
+                    portal.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
 
                     for (UUID id : players){
                         Bukkit.getPlayer(id).sendMessage(ChatColor.RED + "Vendrick opened a portal to the " + ChatColor.DARK_PURPLE + ChatColor.BOLD + "ETERNAL WRAITHS! " + ChatColor.RED + "Quick! Destroy the portal!");
@@ -159,28 +160,18 @@ public class PortalWraiths implements Listener {
                 public void run() {
                     if (spawnMobs){
                         for (int i = 0; i <  4; i++){
-                            LivingEntity skele = (LivingEntity) location.getWorld().spawnEntity(location, EntityType.WITHER_SKELETON);
-                            skele.setHealth(1);
-                            skele.setCustomName(ChatColor.GRAY + "" + ChatColor.BOLD + "Eternal Wraith");
-                            skele.addPotionEffect(PotionEffectType.FIRE_RESISTANCE.createEffect(10000,1));
-                            skele.setMetadata("Wraith", new FixedMetadataValue(plugin, "wraith"));
-
                             switch (i){
                                 case 0:
-                                    skele.teleport(location.add(1,0,1));
-                                    location.subtract(1,0,1);
+                                    Wraith wraith = new Wraith(location.clone().add(1,0,1), plugin);
                                     break;
                                 case 1:
-                                    skele.teleport(location.add(-1,0,1));
-                                    location.subtract(-1,0,1);
+                                    Wraith wraith2 = new Wraith(location.clone().add(-1,0,1), plugin);
                                     break;
                                 case 2:
-                                    skele.teleport(location.add(1,0,-1));
-                                    location.subtract(1,0,-1);
+                                    Wraith wraith3 = new Wraith(location.clone().add(1,0,-1), plugin);
                                     break;
                                 case 3:
-                                    skele.teleport(location.add(-1,0,-1));
-                                    location.subtract(-1,0,-1);
+                                    Wraith wraith4 = new Wraith(location.clone().add(-1,0,-1), plugin);
                                     break;
                             }
 
@@ -269,16 +260,6 @@ public class PortalWraiths implements Listener {
 
         public void stopSpawning(){
             spawnMobs = false;
-        }
-
-        @EventHandler
-        public void dontTake(PlayerInteractAtEntityEvent e){
-            if (!(e.getRightClicked() instanceof ArmorStand)){
-                return;
-            }
-            if (e.getRightClicked().hasMetadata("Portal")){
-                e.setCancelled(true);
-            }
         }
 
         public void skipAttack(){
