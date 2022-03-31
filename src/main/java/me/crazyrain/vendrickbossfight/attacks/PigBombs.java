@@ -1,6 +1,7 @@
 package me.crazyrain.vendrickbossfight.attacks;
 
 import me.crazyrain.vendrickbossfight.VendrickBossFight;
+import me.crazyrain.vendrickbossfight.mobs.PigBomb;
 import me.crazyrain.vendrickbossfight.npcs.Vendrick;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -10,13 +11,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 
@@ -27,11 +24,8 @@ public class PigBombs implements Listener {
     static Vendrick vendrick;
     List<UUID> players;
 
-    public Pig pigBomb;
-
     public static Integer pigAmount = 4;
     public static boolean pigsDead = false;
-    public Integer endAmount;
 
     public PigBombs(VendrickBossFight plugin){
         this.plugin = plugin;
@@ -42,53 +36,31 @@ public class PigBombs implements Listener {
         PigBombs.vendrick = vendrick;
         this.players = players;
         pigAmount = 4;
-        spawnPigs(PigBombs.vendrick.getVendrick().getLocation().add(0,4,0), this.players);
+        spawnPigs(PigBombs.vendrick.getVendrick().getLocation().add(0,4,0));
     }
 
-
-    public void spawnPigs(Location loc, List<UUID> players){
+    public void spawnPigs(Location loc){
         new BukkitRunnable(){
-
             @Override
             public void run() {
                 for (int i = 0; i < 4; i++) {
-                    pigBomb = (Pig) loc.getWorld().spawnEntity(loc, EntityType.PIG);
-                    pigBomb.setHealth(1);
-                    pigBomb.setCustomName(ChatColor.GOLD + "" + ChatColor.BOLD + "Pig Bomb");
-                    pigBomb.setCustomNameVisible(true);
-                    pigBomb.setAdult();
-                    pigBomb.addPotionEffect(PotionEffectType.SLOW.createEffect(100000, 20));
-                    pigBomb.setMetadata("PigBomb", new FixedMetadataValue(plugin, "pigbomb"));
-
-
-                    Double rand = Math.random();
-                    Vector pv = pigBomb.getLocation().getDirection();
+                    double rand = Math.random();
 
                     switch (i){
                         case 0:
-                            pv.setX(1);
-                            pv.setZ(rand);
+                            PigBomb bomb = new PigBomb(loc, 1, rand, plugin);
                             break;
                         case 1:
-                            pv.setX(-1);
-                            pv.setZ(rand);
+                            PigBomb bomb2 = new PigBomb(loc, -1, rand, plugin);
                             break;
                         case 2:
-                            pv.setZ(1);
-                            pv.setX(-rand);
+                            PigBomb bomb3 = new PigBomb(loc, -rand, 1, plugin);
                             break;
                         case 3:
-                            pv.setZ(-1);
-                            pv.setX(-rand);
+                            PigBomb bomb4 = new PigBomb(loc, -rand, -1, plugin);
                             break;
                     }
 
-                    pigBomb.setVelocity(pv);
-                    loc.getWorld().playSound(loc, Sound.ENTITY_ENDER_DRAGON_FLAP, 5f, 1.5f);
-
-                    for (UUID p : plugin.fighting){
-                        damagePlayer(Bukkit.getPlayer(p), pigBomb);
-                    }
 
                 }
                 countDown();
@@ -148,27 +120,6 @@ public class PigBombs implements Listener {
         }
     }
 
-    public void damagePlayer(Player player, LivingEntity e){
-        new BukkitRunnable(){
-
-            @Override
-            public void run() {
-                if (!pigsDead){
-                    if (e.getHealth() > 0){
-                        for (UUID id : plugin.fighting){
-                            Bukkit.getPlayer(id).getLocation().getWorld().spawnParticle(Particle.EXPLOSION_LARGE, player.getLocation(), 2);
-                            Bukkit.getPlayer(id).playSound(Bukkit.getPlayer(id).getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
-                            Bukkit.getPlayer(id).sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "BOOM! " + ChatColor.RED + "A pig bomb exploded!");
-                            Bukkit.getPlayer(id).damage(5 * pigAmount);
-                        }
-                        explode(e);
-                    }
-                }
-            }
-        }.runTaskLater(plugin, 20 * 7);
-
-    }
-
     @EventHandler
     public void stopPigAttack(EntityDamageByEntityEvent e){
         if (!plugin.fighting.contains(e.getDamager().getUniqueId()) && !e.getDamager().isOp()){
@@ -177,13 +128,6 @@ public class PigBombs implements Listener {
                 e.getDamager().sendMessage(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "The defusal process is too confusing for a soul as pure as yours");
             }
         }
-    }
-
-    public void explode(LivingEntity e){
-        if (e.getHealth() > 0){
-                    e.setHealth(0);
-                    e.getLocation().getWorld().spawnParticle(Particle.EXPLOSION_LARGE, e.getLocation(), 1);
-                }
     }
 
     @EventHandler
