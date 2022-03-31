@@ -31,6 +31,7 @@ public class FlamingVendrick extends Vendrick{
     VendrickBossFight plugin;
     Location spawnLoc;
     int phase;
+    boolean skipable = false;
 
     ItemStack fireHatchet = ItemManager.vendrickHatchet.clone();
 
@@ -95,6 +96,26 @@ public class FlamingVendrick extends Vendrick{
         vendrick.setAI(true);
         vendrick.setInvulnerable(false);
         vendrick.setGlowing(false);
+        setPhase(0);
+        setSkipable();
+    }
+
+    @Override
+    public void setSkipable(){
+        this.skipable = !skipable;
+    }
+    @Override
+    public boolean getSkipable(){
+        return skipable;
+    }
+
+    @Override
+    public int getPhase(){
+        return phase;
+    }
+    @Override
+    public void setPhase(int phase){
+        this.phase = phase;
     }
 
     @Override
