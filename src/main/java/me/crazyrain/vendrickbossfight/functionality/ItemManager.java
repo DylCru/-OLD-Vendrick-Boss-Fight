@@ -49,6 +49,11 @@ public class ItemManager {
     public static ItemStack unchargedRifle;
     public static ItemStack infinium;
 
+    public static ItemStack[] allItems;
+    public static ItemStack[] weapons;
+    public static ItemStack[] materials;
+    public static ItemStack[] vendrick;
+
     public static void Init(){
         createStar();
         createHatchet();
@@ -81,6 +86,13 @@ public class ItemManager {
         catalystPartB = createCatalystPart("B", Material.CHORUS_FLOWER);
         createUncharged();
         createInfinium();
+
+        allItems = new ItemStack[]{eternalStar, flamingStar, tidalStar, stormStar, vendrickHatchet, eternalFragment, essenceOfEternity, trueEternalHatchet, shatterSpine, shatterStick, nutrimentOfTheInfinite, pieCrust,
+                                    lusciousApple, oven, nutrimentU, theCatalyst, catalystPartA, catalystPartB, flameCore, waveCore, voltaicCore, volatileStar,
+                                     unchargedRifle, fusionChamber, energyRifle, infinium};
+        weapons = new ItemStack[]{vendrickHatchet, trueEternalHatchet, shatterStick, energyRifle};
+        materials = new ItemStack[]{eternalFragment, essenceOfEternity, shatterSpine, infinium, pieCrust, lusciousApple, oven, fusionChamber};
+        vendrick = new ItemStack[]{eternalStar, flamingStar, tidalStar, stormStar, theCatalyst, catalystPartA, catalystPartB, flameCore, waveCore, voltaicCore, volatileStar};
     }
 
     private static void createStar(){
@@ -233,11 +245,11 @@ public class ItemManager {
     }
 
     private static void createGrowthSword(){
-        ItemStack item = new ItemStack(Material.GOLDEN_SWORD);
+        ItemStack item = new ItemStack(Material.ROSE_BUSH);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Sword of Eternity");
-        meta.addEnchant(Enchantment.DAMAGE_ALL, 6, true);
+        meta.setDisplayName(ChatColor.DARK_RED + "" + ChatColor.BOLD + "Vendrick's rose");
+        meta.addEnchant(Enchantment.DAMAGE_ALL, 25, true);
         meta.addEnchant(Enchantment.DURABILITY, 3, true);
         meta.setUnbreakable(true);
         item.setItemMeta(meta);
