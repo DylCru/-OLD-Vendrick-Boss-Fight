@@ -10,6 +10,7 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -60,7 +61,6 @@ public class EnergyRifle implements Listener {
             pulse.setMetadata("venPulse", new FixedMetadataValue(plugin, "venpulse"));
             pulse.setVelocity(direction);
 
-
             new BukkitRunnable() {
                 int count = 0;
 
@@ -85,7 +85,9 @@ public class EnergyRifle implements Listener {
                             LivingEntity en = (LivingEntity) e;
                             en.damage(20, player);
                             en.getWorld().strikeLightningEffect(en.getLocation());
-                            player.sendMessage(ChatColor.DARK_GRAY + "Your Pulse Shot hit " + e.getName() + ChatColor.DARK_GRAY + " for 20 damage");
+                            if (plugin.getConfig().getBoolean("do-rifle-feedback")) {
+                                player.sendMessage(ChatColor.DARK_GRAY + "Your Pulse Shot hit " + e.getName() + ChatColor.DARK_GRAY + " for 20 damage");
+                            }
                             pulse.remove();
                             cancel();
                         } catch (ClassCastException ignored){}
@@ -94,6 +96,15 @@ public class EnergyRifle implements Listener {
                     count++;
                 }
             }.runTaskTimer(plugin, 0, 1);
+        }
+    }
+
+    @EventHandler
+    public void onGrassTill(PlayerInteractEvent e){
+        Player player = e.getPlayer();
+        if (player.getEquipment().getItemInMainHand().equals(ItemManager.energyRifle)
+                || player.getEquipment().getItemInMainHand().equals(ItemManager.energyRifle)){
+            e.setCancelled(true);
         }
     }
 }
