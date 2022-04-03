@@ -95,6 +95,9 @@ ShowCooldown: true
 rifle-safe:
   - VILLAGER
 
+# Determines whether a message displays when the energy rifle hits a mob
+do-rifle-feedback: true
+
 # The mob that drops the flame/wave core
 # Make sure the chosen mob is killable or cores will not be obtainable without /ven i
 # defaults:
