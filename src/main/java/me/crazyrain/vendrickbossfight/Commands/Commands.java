@@ -3,7 +3,10 @@ package me.crazyrain.vendrickbossfight.Commands;
 import me.crazyrain.vendrickbossfight.VendrickBossFight;
 import me.crazyrain.vendrickbossfight.functionality.ItemManager;
 import me.crazyrain.vendrickbossfight.functionality.Lang;
-import me.crazyrain.vendrickbossfight.inventories.VenItems;
+import me.crazyrain.vendrickbossfight.inventories.VenInventory;
+import me.crazyrain.vendrickbossfight.mobs.Growth;
+import me.crazyrain.vendrickbossfight.mobs.PigBomb;
+import me.crazyrain.vendrickbossfight.mobs.Wraith;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -47,7 +50,7 @@ public class Commands implements CommandExecutor {
                         player.sendMessage(ChatColor.AQUA + "/ven clear - Removes any vendrick related entities in a 10 block radius. Can only be used while not in a fight. Does not remove merchants.");
 
                     } else if (args[0].equalsIgnoreCase("items") || args[0].equalsIgnoreCase("i")){
-                        VenItems inv = new VenItems();
+                        VenInventory inv = new VenInventory("Vendrick Items: All", ItemManager.allItems, 1, false);
                         player.openInventory(inv.getInventory());
 
                     } else if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")){
@@ -126,6 +129,28 @@ public class Commands implements CommandExecutor {
                             plugin.saveConfig();
                             player.sendMessage(venPrefix + ChatColor.GREEN + " Added new location: " + key + " to the config!");
                         }
+                    } else if (args[0].equalsIgnoreCase("summon")){
+                        if (args.length >= 2){
+                            String mob = args[1].toUpperCase();
+                            switch (mob){
+                                case "PIG":
+                                    PigBomb bomb = new PigBomb(player.getLocation(), 0, 0, plugin);
+                                    break;
+                                case "WRAITH":
+                                    Wraith wraith = new Wraith(player.getLocation(), plugin);
+                                    break;
+                                case "GROWTH":
+                                    Growth growth = new Growth(player.getLocation(), plugin);
+                                    break;
+                                default:
+                                    player.sendMessage(venPrefix + ChatColor.RED + " Invalid entity: " + mob);
+                                    break;
+                            }
+                        } else {
+                            player.sendMessage(venPrefix + ChatColor.RED + " /ven summon [pig/wraith/growth]");
+                        }
+                    } else if (args[0].equalsIgnoreCase("test")){
+
                     }
                     else {
                         player.sendMessage(venPrefix + ChatColor.RED + " /ven [help] [items] [reload] [merchant] [mremove]");
