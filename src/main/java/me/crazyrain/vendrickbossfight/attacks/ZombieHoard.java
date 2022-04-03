@@ -1,22 +1,15 @@
 package me.crazyrain.vendrickbossfight.attacks;
 
-import me.crazyrain.vendrickbossfight.functionality.ItemManager;
 import me.crazyrain.vendrickbossfight.VendrickBossFight;
+import me.crazyrain.vendrickbossfight.mobs.Growth;
 import me.crazyrain.vendrickbossfight.npcs.Vendrick;
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.Objects;
 import java.util.UUID;
 
 public class ZombieHoard implements Listener {
@@ -25,8 +18,6 @@ public class ZombieHoard implements Listener {
 
     public static Integer zombieAmount = 6;
     public static Integer spawned = 0;
-
-    public Zombie venZombie;
 
     static Vendrick vendrick;
 
@@ -53,29 +44,24 @@ public class ZombieHoard implements Listener {
 
 
     public void spawnZombies(Location loc){
-        spawned = 0;
-        new BukkitRunnable(){
-
-            @Override
-            public void run() {
-                    venZombie = (Husk) loc.getWorld().spawnEntity(loc.clone().add(0,3,0), EntityType.HUSK);
-                    venZombie.setBaby();
-                    loc.getWorld().playSound(loc, Sound.ENTITY_VEX_HURT , 1.0f, 1.0f);
-                    venZombie.setCustomName(ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Eternal Growth");
-                    venZombie.getEquipment().setItemInMainHand(ItemManager.growthSword);
-                    venZombie.setMetadata("Growth", new FixedMetadataValue(plugin, "growth"));
-
-                    AttributeModifier modifier = new AttributeModifier(Objects.requireNonNull(venZombie.getCustomName()), 30, AttributeModifier.Operation.ADD_NUMBER);
-                    venZombie.getAttribute(Attribute.GENERIC_MAX_HEALTH).addModifier(modifier);
-                    venZombie.setHealth(50);
-
-                    spawned += 1;
-                if (spawned >= zombieAmount){
-                    vendrick.setSkipable();
-                    cancel();
-                }
+        LivingEntity venMob = vendrick.getVendrick();
+        for (int i = 0; i < 6; i++){
+            int x = 0, z= 0;
+            if (i % 2 == 0){
+                x = 1;
+            } else {
+                x = -1;
             }
-        }.runTaskTimer(plugin, 0, 15);
+            if (i >= 4){
+                z = -1;
+            } else if (i >= 2) {
+                z = 1;
+            }
+
+            Growth growth = new Growth(venMob.getLocation().add(x,0,z), plugin);
+        }
+        spawned = 6;
+        vendrick.setSkipable();
     }
 
 
