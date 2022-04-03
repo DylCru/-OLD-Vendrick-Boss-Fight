@@ -9,7 +9,7 @@ import me.crazyrain.vendrickbossfight.distortions.stormy.Hurricane;
 import me.crazyrain.vendrickbossfight.distortions.stormy.StormyEvents;
 import me.crazyrain.vendrickbossfight.distortions.tidal.TideEvents;
 import me.crazyrain.vendrickbossfight.functionality.*;
-import me.crazyrain.vendrickbossfight.functionality.GiveItem;
+import me.crazyrain.vendrickbossfight.inventories.ClickEvents;
 import me.crazyrain.vendrickbossfight.npcs.Vendrick;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -54,12 +54,12 @@ public final class VendrickBossFight extends JavaPlugin {
         LANG = loadLang();
         ItemManager.Init();
         initLocations();
+        ItemGlow.initTeams();
 
         getServer().getPluginManager().registerEvents(new Events(this),this);
         getServer().getPluginManager().registerEvents(new ZombieHoard(this), this);
         getServer().getPluginManager().registerEvents(new PigBombs(this), this);
         getServer().getPluginManager().registerEvents(new PlayerShatter(this), this);
-        getServer().getPluginManager().registerEvents(new GiveItem(), this);
         getServer().getPluginManager().registerEvents(new NutrimentFunc(), this);
         getServer().getPluginManager().registerEvents(new PortalWraiths(this), this);
         getServer().getPluginManager().registerEvents(new MerchantFunc(this), this);
@@ -70,14 +70,20 @@ public final class VendrickBossFight extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new StormyEvents(this), this );
         getServer().getPluginManager().registerEvents(new EnergyRifle(this), this);
         getServer().getPluginManager().registerEvents(new StatTrackingEvents(), this);
+        getServer().getPluginManager().registerEvents(new ItemGlow(), this);
+        getServer().getPluginManager().registerEvents(new ClickEvents(), this);
         getCommand("ven").setExecutor(new Commands(this));
         getCommand("venfight").setExecutor(new FightCommands(this));
         getCommand("ventimer").setExecutor(new TimerTest());
+
+        Metrics metrics = new Metrics(plugin, 14496);
 
     }
 
     @Override
     public void onDisable(){
+        ItemGlow.removeTeams();
+
         for (Bar bar : bars){
             bar.remove();
         }
