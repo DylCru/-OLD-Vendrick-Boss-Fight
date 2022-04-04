@@ -3,6 +3,7 @@ package me.crazyrain.vendrickbossfight.Commands;
 import me.crazyrain.vendrickbossfight.VendrickBossFight;
 import me.crazyrain.vendrickbossfight.functionality.ItemManager;
 import me.crazyrain.vendrickbossfight.functionality.Lang;
+import me.crazyrain.vendrickbossfight.inventories.ClickEvents;
 import me.crazyrain.vendrickbossfight.inventories.VenInventory;
 import me.crazyrain.vendrickbossfight.mobs.Growth;
 import me.crazyrain.vendrickbossfight.mobs.PigBomb;
@@ -12,6 +13,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.logging.Level;
 
@@ -48,6 +50,10 @@ public class Commands implements CommandExecutor {
                         player.sendMessage(ChatColor.AQUA + "/ven mremove - Removes all merchants in a 5 block radius");
                         player.sendMessage("");
                         player.sendMessage(ChatColor.AQUA + "/ven clear - Removes any vendrick related entities in a 10 block radius. Can only be used while not in a fight. Does not remove merchants.");
+                        player.sendMessage("");
+                        player.sendMessage(ChatColor.AQUA + "/ven summon [wraith/pig/growth] - Summon any plugin mob. Can only be used while not in a fight.");
+                        player.sendMessage("");
+                        player.sendMessage(ChatColor.AQUA + "/ven refresh - Hold a Vendrick item to update it to it's latest version");
 
                     } else if (args[0].equalsIgnoreCase("items") || args[0].equalsIgnoreCase("i")){
                         VenInventory inv = new VenInventory("Vendrick Items: All", ItemManager.allItems, 1, false);
@@ -129,10 +135,11 @@ public class Commands implements CommandExecutor {
                             plugin.saveConfig();
                             player.sendMessage(venPrefix + ChatColor.GREEN + " Added new location: " + key + " to the config!");
                         }
-                    } else if (args[0].equalsIgnoreCase("summon")){
-                        if (args.length >= 2){
+                    } else if (args[0].equalsIgnoreCase("summon")) {
+                        if (!plugin.venSpawned) {
+                        if (args.length >= 2) {
                             String mob = args[1].toUpperCase();
-                            switch (mob){
+                            switch (mob) {
                                 case "PIG":
                                     PigBomb bomb = new PigBomb(player.getLocation(), 0, 0, plugin);
                                     break;
@@ -149,6 +156,25 @@ public class Commands implements CommandExecutor {
                         } else {
                             player.sendMessage(venPrefix + ChatColor.RED + " /ven summon [pig/wraith/growth]");
                         }
+                    } else {
+                            player.sendMessage(venPrefix + ChatColor.RED + " This command cannot be used while a fight is in progress!");
+                        }
+                    } else if (args[0].equalsIgnoreCase("refresh")){
+                        if (player.getEquipment().getItemInMainHand().getType().equals(Material.AIR) || !player.getEquipment().getItemInMainHand().hasItemMeta()){
+                            player.sendMessage(venPrefix + ChatColor.RED + " You need to hold an item!");
+                        } else {
+                            ItemStack[] item = ClickEvents.findItems(player.getEquipment().getItemInMainHand().getItemMeta().getDisplayName());
+                            if (item == null){
+                                player.sendMessage(venPrefix + ChatColor.RED + " You need to hold a Vendrick Item");
+                            } else {
+                                int amount = player.getEquipment().getItemInMainHand().getAmount();
+                                player.getEquipment().setItemInMainHand(item[0]);
+                                player.getEquipment().getItemInMainHand().setAmount(amount);
+                                player.updateInventory();
+                                player.sendMessage(venPrefix + ChatColor.GREEN + " Refreshed your " + item[0].getItemMeta().getDisplayName());
+                            }
+                        }
+
                     }
                     else {
                         player.sendMessage(venPrefix + ChatColor.RED + " /ven [help] [items] [reload] [merchant] [mremove]");
