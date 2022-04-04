@@ -1,5 +1,5 @@
-# Vendrick The Eternal Guardian Boss Fight
-Version 1.91
+# Vendrick: The Eternal Guardian Boss Fight
+Version 1.10
 
 A spigot plugin that introduces a new bossfight
 
