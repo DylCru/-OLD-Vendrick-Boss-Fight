@@ -3,10 +3,10 @@ package me.crazyrain.vendrickbossfight.functionality;
 import org.bukkit.ChatColor;
 
 public enum Rarity {
-    RARE("&9Rare &8Tier"),
-    EPIC("&5Epic &8Tier"),
-    SPECIAL("&dSpecial &8Tier"),
-    INSANE("&cInsane &8Tier");
+    RARE(Lang.RARETIER.toString()),
+    EPIC(Lang.EPICTIER.toString()),
+    SPECIAL(Lang.SPECIALTIER.toString()),
+    INSANE(Lang.INSANETIER.toString());
 
     String text;
     Rarity(String text){
