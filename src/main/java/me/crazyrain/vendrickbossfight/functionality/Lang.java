@@ -108,6 +108,28 @@ public enum Lang {
     INFINIUMNAME("infinium-name","&6&lInfinium"),
     INFINIUM1("infinium1", "&8This ore is the foundation of the eternal realms towering cities"),
     INFINIUM2("infinium2","&8Let your creativity flow through"),
+    RARETIER("rare-tier", "&9Rare &8Tier"),
+    RAREDROP("rare-drop" ,"&6&lNICE! &6You found an"),
+    EPICTIER("epic-tier", "&5Epic &8Tier"),
+    EPICDROP("epic-drop", "&6&lNICE! &6You found an"),
+    SPECIALTIER("special-tier", "&dSpecial &8Tier"),
+    SPECIALDROP("special-drop", "&c&lINCREDIBLE! &6You found a"),
+    INSANETIER("insane-tier", "&cInsane &8Tier"),
+    FLAMESTARDESC1("flame-star-desc1", "&c&lFLAMING &dDistortion"),
+    FLAMESTARDESC2("flame-star-desc2", "&7Vendrick uses the power of flames and pyre to really"),
+    FLAMESTARDESC3("flame-star-desc3", "&7&olight &7up the battlefield"),
+    FLAMECORE("flame-core","&c&lFlame Core"),
+    FLAMECORETAG("flame-core-tagline", "&8It's hot."),
+    TIDESTARDESC1("tide-star-desc1","&9&lTIDAL &dDistortion"),
+    TIDESTARDESC2("tide-star-desc2", "&7Vendrick harnesses the might of the ocean to"),
+    TIDESTARDESC3("tide-star-desc3", "&7ensure his fight goes &o swimmingly"),
+    WAVECORE("wave-core","&9&lWave Core"),
+    WAVECORETAG("wave-core-tagline", "&8It's wet."),
+    STORMSTARDESC1("storm-star-desc1", "&e&lSTORMY &dDistortion"),
+    STORMSTARDESC2("storm-star-desc2", "&7Vendrick becomes the eye of the storm. Watch where you're going."),
+    STORMSTARDESC3("storm-star-desc3", "&7It's about to get &o electrifying!."),
+    VOLTAICCORE("voltaic-core","&e&lVoltaic Core"),
+    VOLTAICCORETAG("voltaic-core-tagline", "&8It's electric.")
     ;
 
 
