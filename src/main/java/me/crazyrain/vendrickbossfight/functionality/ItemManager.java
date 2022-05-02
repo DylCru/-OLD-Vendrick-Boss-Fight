@@ -74,9 +74,9 @@ public class ItemManager {
         createOven();
         createNutrimentU();
         createCatalyst();
-        flameCore = createCore("Flame", ChatColor.RED, "It's hot.", Material.ORANGE_DYE, Rarity.RARE.toString());
-        waveCore = createCore("Wave", ChatColor.BLUE, "It's wet.", Material.LIGHT_BLUE_DYE, Rarity.RARE.toString());
-        voltaicCore = createCore("Voltaic", ChatColor.YELLOW, "It's electric.", Material.YELLOW_DYE, Rarity.EPIC.toString());
+        flameCore = createCore(Lang.FLAMECORE.toString(), Lang.FLAMECORETAG.toString(), Material.ORANGE_DYE, Rarity.RARE.toString());
+        waveCore = createCore(Lang.WAVECORE.toString(), Lang.WAVECORETAG.toString(), Material.LIGHT_BLUE_DYE, Rarity.RARE.toString());
+        voltaicCore = createCore(Lang.VOLTAICCORE.toString(), Lang.VOLTAICCORETAG.toString(), Material.YELLOW_DYE, Rarity.EPIC.toString());
         createVolatile();
         createEarthStar();
         createBall();
@@ -155,9 +155,9 @@ public class ItemManager {
         lore.add("");
         lore.add(ChatColor.YELLOW + "Difficulty: ★★☆☆☆");
         lore.add("");
-        lore.add(ChatColor.RED + "" + ChatColor.BOLD + "FLAMING " + ChatColor.LIGHT_PURPLE + "Distortion");
-        lore.add(ChatColor.GRAY + "Vendrick uses the power of flames and pyre to really");
-        lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "light" + ChatColor.GRAY + " up the battlefield");
+        lore.add(Lang.FLAMESTARDESC1.toString());
+        lore.add(Lang.FLAMESTARDESC2.toString());
+        lore.add(Lang.FLAMESTARDESC3.toString());
 
         meta.setLore(lore);
 
@@ -182,9 +182,9 @@ public class ItemManager {
         lore.add("");
         lore.add(ChatColor.YELLOW + "Difficulty: ★★★☆☆");
         lore.add("");
-        lore.add(ChatColor.BLUE + "" + ChatColor.BOLD + "TIDAL " + ChatColor.LIGHT_PURPLE + "Distortion");
-        lore.add(ChatColor.GRAY + "Vendrick harnesses the might of the ocean to");
-        lore.add(ChatColor.GRAY + "ensure his fight goes " + ChatColor.ITALIC + "swimmingly");
+        lore.add(Lang.TIDESTARDESC1.toString());
+        lore.add(Lang.TIDESTARDESC2.toString());
+        lore.add(Lang.TIDESTARDESC3.toString());
 
 
         meta.setLore(lore);
@@ -210,9 +210,9 @@ public class ItemManager {
         lore.add("");
         lore.add(ChatColor.YELLOW + "Difficulty: ★★★★☆");
         lore.add("");
-        lore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "STORMY " + ChatColor.LIGHT_PURPLE + "Distortion");
-        lore.add(ChatColor.GRAY + "Vendrick becomes the eye of the storm. Watch where you're going.");
-        lore.add(ChatColor.GRAY + "It's about to get " + ChatColor.ITALIC + "electrifying!.");
+        lore.add(Lang.STORMSTARDESC1.toString());
+        lore.add(Lang.STORMSTARDESC2.toString());
+        lore.add(Lang.STORMSTARDESC3.toString());
 
 
         meta.setLore(lore);
@@ -507,11 +507,11 @@ public class ItemManager {
         theCatalyst = item;
     }
 
-    private static ItemStack createCore(String type, ChatColor color, String tagLine, Material mat, String rarity){
+    private static ItemStack createCore(String name, String tagLine, Material mat, String rarity){
         ItemStack item = new ItemStack(mat);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(color + "" + ChatColor.BOLD + type + " Core");
+        meta.setDisplayName(name);
         List<String> lore = new ArrayList<>();
         lore.add(rarity);
         lore.add("");
@@ -532,6 +532,7 @@ public class ItemManager {
         lore.add(Rarity.EPIC.toString());
         lore.add("");
         lore.add(Lang.BALLLIGHTNING1.toString());
+        lore.add(ChatColor.DARK_GRAY + "" + ChatColor.ITALIC + "Lost on death!");
         meta.setLore(lore);
         item.setItemMeta(meta);
         ballLightning = item;
