@@ -218,7 +218,7 @@ public class Events implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOW)
     public void showHealth(EntityDamageByEntityEvent e){
         if (e.getEntity() instanceof Vindicator){
             if (e.getEntity().hasMetadata("Vendrick")){
@@ -347,7 +347,7 @@ public class Events implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGHEST) // Runs event after showHealth to ensure health is set for interval attacks before this one is rolled
     public void rollForAttack(EntityDamageByEntityEvent e){
         if (e.getEntity() instanceof Vindicator){
             if (e.getEntity().hasMetadata("Vendrick")){
@@ -357,7 +357,7 @@ public class Events implements Listener {
                         int attack = (int) (Math.random() * 3);
                         switch (attack) {
                             case 0:
-                                if (!(attacking)) {
+                                if (!(attacking) && percent == 0.75) {
                                     PortalWraiths wraiths = new PortalWraiths(plugin);
                                     wraiths.init(plugin.vendrick, plugin.fighting, true);
                                     plugin.vendrick.startAttack(1);
@@ -370,7 +370,7 @@ public class Events implements Listener {
                                 }
                                 break;
                             case 1:
-                                if (!(attacking)) {
+                                if (!(attacking) && percent == 0.50) {
                                     PigBombs pigBombs = new PigBombs(plugin);
                                     pigBombs.init(plugin.vendrick, plugin.fighting);
                                     plugin.vendrick.startAttack(2);
@@ -383,7 +383,7 @@ public class Events implements Listener {
                                 }
                                 break;
                             case 2:
-                                if (plugin.getConfig().getBoolean("DoGrowths")) {
+                                if (plugin.getConfig().getBoolean("DoGrowths") && percent != 0.75 && percent != 0.50) {
                                     ZombieHoard hoard = new ZombieHoard(plugin);
                                     hoard.init(plugin.vendrick);
                                     attacking = true;
