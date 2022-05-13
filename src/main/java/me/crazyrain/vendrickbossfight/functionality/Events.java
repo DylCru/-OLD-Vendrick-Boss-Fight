@@ -13,6 +13,7 @@ import org.bukkit.*;
 import org.bukkit.Color;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.*;
@@ -57,7 +58,7 @@ public class Events implements Listener {
             if (e.getEntity().getThrower() == null) {
                 return;
             }
-            if (Objects.requireNonNull(e.getEntity().getItemStack().getItemMeta()).getDisplayName().contains(ChatColor.BOLD + "Eternal Star")) {
+            if (Objects.requireNonNull(e.getEntity().getItemStack().getItemMeta()).getDisplayName().contains(Lang.STARNAME.toString())) {
                 Player player = Bukkit.getPlayer(e.getEntity().getThrower());
                 starDropped = true;
                 new BukkitRunnable() {
@@ -103,6 +104,20 @@ public class Events implements Listener {
                             player.sendMessage(Lang.CIRCLE.toString());
                             player.sendMessage(Lang.STAR.toString());
                             player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 0.2f);
+
+                            for (Entity e : spawnLoc.getWorld().getNearbyEntities(spawnLoc, 45, 45 ,45)){
+                                if (e instanceof  Player){
+                                    Player p = ((Player) e).getPlayer();
+                                    if (p == player){
+                                        continue;
+                                    }
+                                    p.playSound(player.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1.0f, 0.2f);
+                                    p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Vendrick is spawning nearby!");
+                                    p.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "Head to X:" + spawnLoc.getBlockX()
+                                            + ", Y:" + spawnLoc.getBlockY() + ", X:" + spawnLoc.getBlockZ() + "!");
+
+                                }
+                            }
 
 
                             if (e.getEntity().getItemStack().getItemMeta().getDisplayName().contains("(FLAMING)")){
@@ -184,7 +199,7 @@ public class Events implements Listener {
         }
     }
 
-    public void makeCircle(Location loc, Float radius, Color color){
+    public static void makeCircle(Location loc, Float radius, Color color){
         new BukkitRunnable(){
             Integer t = 0;
             @Override
@@ -203,7 +218,7 @@ public class Events implements Listener {
                 }
                 t += 3;
             }
-        }.runTaskTimer(plugin, 0, 3);
+        }.runTaskTimer(VendrickBossFight.plugin, 0, 3);
     }
 
     @EventHandler
@@ -357,7 +372,7 @@ public class Events implements Listener {
                         int attack = (int) (Math.random() * 3);
                         switch (attack) {
                             case 0:
-                                if (!(attacking) && percent == 0.75) {
+                                if (!(attacking) && !(percent == 0.75)) {
                                     PortalWraiths wraiths = new PortalWraiths(plugin);
                                     wraiths.init(plugin.vendrick, plugin.fighting, true);
                                     plugin.vendrick.startAttack(1);
@@ -370,7 +385,7 @@ public class Events implements Listener {
                                 }
                                 break;
                             case 1:
-                                if (!(attacking) && percent == 0.50) {
+                                if (!(attacking) && !(percent == 0.50)) {
                                     PigBombs pigBombs = new PigBombs(plugin);
                                     pigBombs.init(plugin.vendrick, plugin.fighting);
                                     plugin.vendrick.startAttack(2);
@@ -401,7 +416,6 @@ public class Events implements Listener {
             }
     }
 
-    public Integer text = 0;
     public boolean eventCalled;
     @EventHandler
     public void onBossDeath (EntityDeathEvent e){
@@ -419,6 +433,24 @@ public class Events implements Listener {
                         e.getDrops().clear();
 
                         eventCalled = false;
+
+                        if (plugin.getConfig().getBoolean("skip-cutscene")){
+                            new BukkitRunnable(){
+                                @Override
+                                public void run() {
+                                    bossDead = true;
+                                    for (UUID id : plugin.fighting){
+                                        victory(Bukkit.getPlayer(id));
+                                    }
+                                    plugin.getServer().getPluginManager().callEvent(new VendrickFightStopEvent(plugin.fighting, plugin.fighting, plost
+                                            ,plugin.vendrick.getDistortion(), plugin.vendrick.getDifficulty()));
+                                    lost = false;
+                                    plugin.venSpawned = false;
+                                    plugin.fighting.clear();
+                                }
+                            }.runTaskLater(plugin, 40);
+                            return;
+                        }
 
                         for (UUID id : plugin.fighting){
                             if (!plugin.getConfig().getBoolean("disable-effects")){
@@ -457,7 +489,6 @@ public class Events implements Listener {
                                                 eventCalled = true;
                                             }
                                             victory(Bukkit.getPlayer(id));
-                                            calcLoot(Bukkit.getPlayer(id));
                                             lost = false;
                                             plugin.venSpawned = false;
                                             plugin.fighting.clear();
@@ -513,6 +544,7 @@ public class Events implements Listener {
             public void run() {
                 if (plugin.getConfig().getBoolean("do-drops")){
                     player.sendMessage(ChatColor.GRAY + "As the guardian falls, some loot was left behind");
+                    plugin.lootHandler.lootRoll(player, plugin.vendrick.getDifficulty());
                 }
             }
         }.runTaskLater(plugin, 20);
@@ -612,202 +644,16 @@ public class Events implements Listener {
         }
     }
 
-    public void calcLoot(Player player){
-        if (!plugin.getConfig().getBoolean("do-drops")){
-            return;
-        }
-
-        int emAmount;
-        int rareChance;
-        int specialChance;
-
-        if (plugin.vendrick.wasDistorted()){
-            emAmount = (int) (Math.random() * (100 - 5) + 5);
-            rareChance = (int) (Math.random() * (plugin.getConfig().getInt("rare-chance") + 1) * 1.5);
-            specialChance = (int) (Math.random() * (plugin.getConfig().getInt("special-chance") + 1) * 1.5);
-        } else {
-            emAmount = (int) (Math.random() * (32 - 5) + 5);
-            rareChance = (int) (Math.random() * (plugin.getConfig().getInt("rare-chance") + 1));
-            specialChance = (int) (Math.random() * (plugin.getConfig().getInt("special-chance") + 1));
-        }
-
-        int insaneChance = (int) (Math.random() * (30 + 1));
-
-        giveLoot(player, 1, emAmount);
-
-        if (rareChance >= (plugin.getConfig().getInt("rare-chance"))){
-            int whatRare;
-            if (plugin.vendrick.wasDistorted()){
-                whatRare = (int) (Math.random() * 4);
-            } else {
-                whatRare = (int) (Math.random() * 3);
+    @EventHandler
+    public void onVendrickTarger(EntityTargetLivingEntityEvent e){
+        if (e.getEntity().hasMetadata("Vendrick")){
+            if (!(e.getTarget() instanceof Player)){
+                return;
             }
-            switch (whatRare){
-                case 0:
-                    giveLoot(player, 2, 2);
-                    break;
-                case 1:
-                    //give player eternal frag
-                    giveLoot(player, 3, 1);
-                    break;
-                case 2:
-                    giveLoot(player, 4, 1);
-                    break;
-                    //give player essence of eternity
-                case 3:
-                    int amount =  (int) (Math.random() * 2 + 1);
-                    giveLoot(player, 10, amount);
+            if (!plugin.fighting.contains(e.getTarget().getUniqueId())){
+                e.setCancelled(true);
             }
         }
-        if (specialChance >= (plugin.getConfig().getInt("special-chance"))){
-            int whatEpic = (int) (Math.random() * 4);
-            switch (whatEpic){
-                case 0:
-                    giveLoot(player, 5, 1);
-                    break;
-                case 1:
-                    giveLoot(player,6,1);
-                    break;
-                case 2:
-                    giveLoot(player,7, 2);
-                    break;
-                case 3:
-                    giveLoot(player, 8, 1);
-                    break;
-            }
-        }
-        if (plugin.vendrick.wasDistorted()){
-            if (insaneChance >= 28){
-                if (plugin.vendrick.getDifficulty() > 3) {
-                    giveLoot(player, 9, 1);
-                } else {
-                    int whatInsane = (int) (Math.random() * 2);
-                    switch (whatInsane){
-                        case 1:
-                            giveLoot(player, 9, 1);
-                            break;
-                        case 2:
-                            giveLoot(player, 11, 1);
-                    }
-                }
-            }
-        }
-    }
-
-    public void giveLoot(Player player, Integer item, Integer amount){
-        new BukkitRunnable(){
-
-            @Override
-            public void run() {
-                switch (item){
-                    case 1:
-                        player.sendMessage(ChatColor.DARK_GRAY + "Received: Emerald x" + amount + " Diamond x" + amount / 3);
-                        if (player.getInventory().firstEmpty() == -1){
-                            player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.EMERALD, amount));
-                            player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.DIAMOND, amount / 3));
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(new ItemStack(Material.EMERALD, amount));
-                            player.getInventory().addItem(new ItemStack(Material.DIAMOND, amount / 3));
-                        }
-                        break;
-                    case 2:
-                        player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "NICE! " + ChatColor.GOLD + "You found " + ChatColor.DARK_GREEN + "" + ChatColor.BOLD + "Emerald Block " + ChatColor.DARK_GRAY + "x2");
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.EMERALD_BLOCK, amount));
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(new ItemStack(Material.EMERALD_BLOCK, amount));
-                        }
-                        break;
-                    case 3:
-                        player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "NICE! " + ChatColor.GOLD + "You found an " + ItemManager.eternalFragment.getItemMeta().getDisplayName());
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), ItemManager.eternalFragment);
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(ItemManager.eternalFragment);
-                        }
-                        break;
-                    case 4:
-                        player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "NICE! " + ChatColor.GOLD + "You found an " + ItemManager.essenceOfEternity.getItemMeta().getDisplayName());
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), ItemManager.essenceOfEternity);
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(ItemManager.essenceOfEternity);
-                        }
-                        break;
-                    case 5:
-                        player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD +  "WOW! " + ChatColor.LIGHT_PURPLE + "You found the " + ItemManager.vendrickHatchet.getItemMeta().getDisplayName());
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), ItemManager.vendrickHatchet);
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(ItemManager.vendrickHatchet);
-                        }
-                        break;
-                    case 6:
-                        player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD +  "WOW! " + ChatColor.LIGHT_PURPLE + "You found a " + ItemManager.shatterSpine.getItemMeta().getDisplayName());
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), ItemManager.shatterSpine);
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(ItemManager.shatterSpine);
-                        }
-                        break;
-                    case 7:
-                        player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD +  "WOW! " + ChatColor.LIGHT_PURPLE + "You found a " + ChatColor.GOLD + "" + ChatColor.BOLD + "Totem of Undying" + ChatColor.DARK_GRAY + " x2");
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), new ItemStack(Material.TOTEM_OF_UNDYING, amount));
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(new ItemStack(Material.TOTEM_OF_UNDYING, amount));
-                        }
-                        break;
-                    case 8:
-                        player.getInventory().addItem(ItemManager.theCatalyst);
-                        player.sendMessage(ChatColor.LIGHT_PURPLE + "" + ChatColor.BOLD +  "WOW! " + ChatColor.LIGHT_PURPLE + "You found " + ItemManager.theCatalyst.getItemMeta().getDisplayName());
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), ItemManager.theCatalyst);
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(ItemManager.theCatalyst);
-                        }
-                        break;
-                    case 9:
-                        player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "INCREDIBLE! " + ChatColor.GOLD + "You found a " + ItemManager.oven.getItemMeta().getDisplayName());
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), ItemManager.oven);
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(ItemManager.oven);
-                        }
-                        break;
-                    case 10:
-                        ItemStack item = ItemManager.infinium.clone();
-                        item.setAmount(amount);
-                        player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "NICE! " + ChatColor.GOLD + "You found " + ItemManager.infinium.getItemMeta().getDisplayName() + ChatColor.DARK_GRAY + " x" + amount);
-                        if (player.getInventory().firstEmpty() == -1){;
-                            player.getWorld().dropItem(player.getLocation(), item);
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(item);
-                        }
-                        break;
-                    case 11:
-                        player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "INCREDIBLE! " + ChatColor.GOLD + "You found a " + ItemManager.fusionChamber.getItemMeta().getDisplayName());
-                        if (player.getInventory().firstEmpty() == -1){
-                            player.getWorld().dropItem(player.getLocation(), ItemManager.fusionChamber);
-                            player.sendMessage(ChatColor.RED + "An item didn't fit in your inventory so it was dropped on the ground!");
-                        } else {
-                            player.getInventory().addItem(ItemManager.fusionChamber);
-                        }
-                        break;
-
-                }
-            }
-        }.runTaskLater(plugin, 20);
     }
 
     //used for custom crafts
